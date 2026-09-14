@@ -46,8 +46,8 @@ def encode_scenario(scenario, checkpoint):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--queue", type=float, default=10, help="Queue minutes")
-    parser.add_argument("--price", type=float, default=250, help="Day-pass price in Norwegian kroner")
-    parser.add_argument("--temperature", type=float, default=-5, help="Degrees Celsius")
+    parser.add_argument("--price", type=float, default=32, help="Day-pass price in US dollars")
+    parser.add_argument("--temperature", type=float, default=23, help="Degrees Fahrenheit")
     parser.add_argument("--slopes-open", type=float, default=1, help="Fraction, e.g. 0.75")
     parser.add_argument("--weather", choices=["SUN", "CLOUDY", "FOG", "SNOW", "RAIN"], default="SUN")
     parser.add_argument("--wind", choices=["NO WIND", "GENTLE BREEZE", "FRESH BREEZE"], default="NO WIND")
@@ -66,8 +66,11 @@ def main():
     with torch.no_grad():
         rating = model(inputs).item()
     print("Scenario:")
-    for key, value in scenario.items():
-        print(f"  {key}: {value}")
+    print(f"  QUE_TIME: {scenario['QUE_TIME']} minutes")
+    print(f"  PRICE: ${scenario['PRICE']} USD")
+    print(f"  TEMPERATURE: {scenario['TEMPERATURE']}°F")
+    for key in ("SLOPES_OPEN", "WEATHER", "WIND", "WEKKDAY", "PERIOD"):
+        print(f"  {key}: {scenario[key]}")
     print(f"\nPredicted willingness-to-ski rating: {rating:.2f}")
     print("Survey scale: 0–100. This is not a calibrated probability.")
     if not 0 <= rating <= 100:

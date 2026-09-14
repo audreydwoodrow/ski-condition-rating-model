@@ -8,6 +8,15 @@ import pandas as pd
 data_path = Path(__file__).parent / "data" / "DATA.xlsx"
 df = pd.read_excel(data_path)
 
+# The survey (Haugom, Malasevska & Lien) was fielded at Hafjell in February 2018.
+# Convert to Fahrenheit and USD once, right after loading, so every downstream
+# script (training, diagnostics, the exported artifact) works in those units.
+# Rate: Norges Bank official monthly average USD/NOK for February 2018.
+NOK_PER_USD = 7.8327
+
+df["TEMPERATURE"] = df["TEMPERATURE"] * 9 / 5 + 32
+df["PRICE"] = df["PRICE"] / NOK_PER_USD
+
 # Convert valid ratings to numbers; mark nonnumeric answers as missing.
 df["RATING"] = pd.to_numeric(df["RATING"], errors="coerce")
 

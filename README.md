@@ -22,10 +22,12 @@ If your environment is already set up, just activate it and run `python predict.
 Change the scenario using command-line arguments:
 
 ```bash
-python predict.py --queue 5 --price 350 --temperature -5 --slopes-open 0.75 --weather SUN --wind "NO WIND" --day WEEKEND --period "REGULAR WEEK"
+python predict.py --queue 5 --price 45 --temperature 23 --slopes-open 0.75 --weather SUN --wind "NO WIND" --day WEEKEND --period "REGULAR WEEK"
 ```
 
-Run `python predict.py --help` for all options. Prices are Norwegian kroner, temperatures are Celsius, queue times are minutes, and slopes open is a fraction (0.75 means 75%). The survey included prices of 250–650 kroner, temperatures from −20 to +5°C, queues of 1/5/10 minutes, and slopes-open fractions of 0.5/0.75/1. Predictions for other values or unfamiliar combinations are extrapolations.
+Run `python predict.py --help` for all options. Prices are US dollars, temperatures are Fahrenheit, queue times are minutes, and slopes open is a fraction (0.75 means 75%). The survey included prices of roughly $32–$83, temperatures from about −4°F to 41°F, queues of 1/5/10 minutes, and slopes-open fractions of 0.5/0.75/1. Predictions for other values or unfamiliar combinations are extrapolations.
+
+The original survey (fielded at Hafjell, Norway in February 2018) used Norwegian kroner and Celsius. This project converts both to USD and Fahrenheit once, right after loading the raw data, using the Norges Bank official average USD/NOK rate for February 2018 (1 USD = 7.8327 NOK). Every downstream step — training, diagnostics, and the exported artifact — works in USD/Fahrenheit from that point on; nothing here reports a live or current exchange rate.
 
 The output is a predicted rating on the survey's 0–100 scale, **not a probability or accuracy percentage**. The final layer is unbounded, so raw predictions can fall outside that scale; the program reports them without silently clipping.
 

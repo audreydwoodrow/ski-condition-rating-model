@@ -51,9 +51,20 @@ Participants rated hypothetical skiing scenarios at Hafjell in Norway. These are
 |---|---:|---:|---|
 | Training | 262 | 4,545 | Update parameters |
 | Validation | 56 | 953 | Choose epochs and compare experiments |
-| Test | 57 | 992 | Reserved for future final evaluation |
+| Test | 57 | 992 | Final evaluation only |
 
-All responses from a skier stay in one split. A NumPy shuffle with seed 42 determines membership. Scaling is fitted only on training inputs. Test data has been prepared but **has not been used for training, model selection, or prediction-error evaluation**. Raw data and local split records stay out of Git.
+All responses from a skier stay in one split. A NumPy shuffle with seed 42 determines membership. Scaling is fitted only on training inputs. Test data was held out through all training, model selection, and factor experiments, then used exactly once, in `evaluate_test.py`, to report the final metrics below. Raw data and local split records stay out of Git.
+
+### Final test-set metrics
+
+Run `python evaluate_test.py` to reproduce. This uses the saved `artifacts/relu_rating_model.json` and touches the test split only for this one report — it plays no role in training or checkpoint selection.
+
+| Model | MAE | RMSE | R² |
+|---|---:|---:|---:|
+| Mean-rating baseline (predict 45.85 always) | 27.18 | 31.87 | ~0.00 |
+| Saved ReLU network | 25.31 | 29.84 | 0.12 |
+
+MAE (mean absolute error) is the average size of the miss, in rating points, ignoring direction. R² is the fraction of test-set rating variance the model accounts for; 0 means "no better than guessing the mean," 1 would mean perfect prediction. The network's edge over the baseline is real but modest — about 1.9 rating points of MAE, and it explains roughly 12% of the variance in test ratings. That's consistent with the validation-set gap reported below (30.54 vs. 29.03 RMSE): weather, price, and queue conditions explain some, not most, of why people rate a hypothetical ski day the way they do.
 
 To reproduce training, download `DATA.xlsx` from the source and place it in `data/DATA.xlsx`. The exact installed versions are listed in `requirements.txt`.
 
@@ -65,6 +76,7 @@ python prepare_data.py         # Data preparation and linear-model training
 python train_network.py        # Train the ReLU network
 python investigate_factors.py  # 27 retraining comparisons
 python export_model.py        # Replace the portable artifact with your trained network
+python evaluate_test.py       # One-time final metric on the reserved test set
 ```
 
 Importing `prepare_data.py` prepares data and prints diagnostics, but does not train the linear model. Its name reflects the project's incremental teaching history; running it directly also trains the linear model.
@@ -103,5 +115,6 @@ Positive means worse predictions without the factor. Wind and vacation changes w
 - `models/`: local PyTorch checkpoints and experiment results; ignored by Git.
 - `data/`: local survey spreadsheet and reserved split records; ignored by Git.
 - `predict.py`: final command-line prediction program; never imports training data.
+- `evaluate_test.py`: one-time final evaluation against the reserved test set (see metrics above).
 
-The JSON artifact contains learned parameters and aggregate preprocessing values, not individual survey responses. The test set is still reserved. Future work could evaluate the frozen model on that set, add more informative data, or inspect particular predictions. The model cannot explain all differences between people given conditions alone.
+The JSON artifact contains learned parameters and aggregate preprocessing values, not individual survey responses. Future work could add more informative data or inspect particular predictions, but the test set has now been spent on its one final report and should not be used again to make further modeling decisions. The model cannot explain all differences between people given conditions alone.

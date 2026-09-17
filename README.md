@@ -66,7 +66,17 @@ Run `python evaluate_test.py` to reproduce. This uses the saved `artifacts/relu_
 
 MAE (mean absolute error) is the average size of the miss, in rating points, ignoring direction. R² is the fraction of test-set rating variance the model accounts for; 0 means "no better than guessing the mean," 1 would mean perfect prediction. The network's edge over the baseline is real but modest — about 1.9 rating points of MAE, and it explains roughly 12% of the variance in test ratings. That's consistent with the validation-set gap reported below (30.54 vs. 29.03 RMSE): weather, price, and queue conditions explain some, not most, of why people rate a hypothetical ski day the way they do.
 
-To reproduce training, download `DATA.xlsx` from the source and place it in `data/DATA.xlsx`. The exact installed versions are listed in `requirements.txt`.
+### Getting the data
+
+`predict.py` needs no dataset — the trained model ships in `artifacts/relu_rating_model.json`. Everything else (retraining, the factor experiments, and `evaluate_test.py`) reads the original survey spreadsheet, which is not redistributed here.
+
+To get it:
+
+1. Download `DATA.xlsx` from the Mendeley record: **[data.mendeley.com/datasets/6w4tzrs3yw/1](https://data.mendeley.com/datasets/6w4tzrs3yw/1)** — DOI [10.17632/6w4tzrs3yw.1](https://doi.org/10.17632/6w4tzrs3yw.1)
+2. Put it at `data/DATA.xlsx` inside the repository folder.
+3. Run `python prepare_data.py`.
+
+The dataset is CC BY 4.0, so it is free to download — the step is manual only so that attribution stays with the source. Exact installed package versions are listed in `requirements.txt`.
 
 ## Training and experiments
 
